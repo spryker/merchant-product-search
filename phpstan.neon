@@ -6,4 +6,4 @@ parameters:
         -
             identifier: missingType.iterableValue
     excludePaths:
-        - '%rootDir%/../../../vendor/spryker/spryker/Bundles/MerchantProductSearch/src/Spryker/Client/MerchantProductSearch/Plugin/Search/MerchantReferenceQueryExpanderPlugin.php'
+        - '%rootDir%/../../../src/Spryker/MerchantProductSearch/src/Spryker/Client/MerchantProductSearch/Plugin/Search/MerchantReferenceQueryExpanderPlugin.php'

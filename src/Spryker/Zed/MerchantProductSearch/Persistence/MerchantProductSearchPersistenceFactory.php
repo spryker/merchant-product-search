@@ -18,17 +18,11 @@ use Spryker\Zed\MerchantProductSearch\Persistence\Mapper\MerchantProductAbstract
  */
 class MerchantProductSearchPersistenceFactory extends AbstractPersistenceFactory
 {
-    /**
-     * @return \Spryker\Zed\MerchantProductSearch\Persistence\Mapper\MerchantProductAbstractMapper
-     */
     public function createMerchantProductAbstractMapper(): MerchantProductAbstractMapper
     {
         return new MerchantProductAbstractMapper();
     }
 
-    /**
-     * @return \Orm\Zed\MerchantProduct\Persistence\SpyMerchantProductAbstractQuery
-     */
     public function getMerchantProductAbstractPropelQuery(): SpyMerchantProductAbstractQuery
     {
         return $this->getProvidedDependency(MerchantProductSearchDependencyProvider::PROPEL_QUERY_MERCHANT_PRODUCT_ABSTRACT);

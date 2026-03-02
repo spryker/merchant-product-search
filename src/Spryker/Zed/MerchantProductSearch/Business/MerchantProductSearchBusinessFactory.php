@@ -23,9 +23,6 @@ use Spryker\Zed\MerchantProductSearch\MerchantProductSearchDependencyProvider;
  */
 class MerchantProductSearchBusinessFactory extends AbstractBusinessFactory
 {
-    /**
-     * @return \Spryker\Zed\MerchantProductSearch\Business\Writer\MerchantProductSearchWriterInterface
-     */
     public function createMerchantProductSearchWriter(): MerchantProductSearchWriterInterface
     {
         return new MerchantProductSearchWriter(
@@ -35,9 +32,6 @@ class MerchantProductSearchBusinessFactory extends AbstractBusinessFactory
         );
     }
 
-    /**
-     * @return \Spryker\Zed\MerchantProductSearch\Business\Expander\MerchantProductSearchExpanderInterface
-     */
     public function createMerchantProductSearchExpander(): MerchantProductSearchExpanderInterface
     {
         return new MerchantProductSearchExpander(
@@ -45,25 +39,16 @@ class MerchantProductSearchBusinessFactory extends AbstractBusinessFactory
         );
     }
 
-    /**
-     * @return \Spryker\Zed\MerchantProductSearch\Dependency\Facade\MerchantProductSearchToEventBehaviorFacadeInterface
-     */
     public function getEventBehaviorFacade(): MerchantProductSearchToEventBehaviorFacadeInterface
     {
         return $this->getProvidedDependency(MerchantProductSearchDependencyProvider::FACADE_EVENT_BEHAVIOR);
     }
 
-    /**
-     * @return \Spryker\Zed\MerchantProductSearch\Dependency\Facade\MerchantProductSearchToProductPageSearchFacadeInterface
-     */
     public function getProductPageSearchFacade(): MerchantProductSearchToProductPageSearchFacadeInterface
     {
         return $this->getProvidedDependency(MerchantProductSearchDependencyProvider::FACADE_PRODUCT_PAGE_SEARCH);
     }
 
-    /**
-     * @return \Spryker\Zed\MerchantProductSearch\Dependency\Facade\MerchantProductSearchToMerchantProductFacadeInterface
-     */
     public function getMerchantProductFacade(): MerchantProductSearchToMerchantProductFacadeInterface
     {
         return $this->getProvidedDependency(MerchantProductSearchDependencyProvider::FACADE_MERCHANT_PRODUCT);

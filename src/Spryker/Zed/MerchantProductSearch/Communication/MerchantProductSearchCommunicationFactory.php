@@ -18,9 +18,6 @@ use Spryker\Zed\MerchantProductSearch\MerchantProductSearchDependencyProvider;
  */
 class MerchantProductSearchCommunicationFactory extends AbstractCommunicationFactory
 {
-    /**
-     * @return \Spryker\Zed\MerchantProductSearch\Dependency\Facade\MerchantProductSearchToMerchantProductFacadeInterface
-     */
     public function getMerchantProductFacade(): MerchantProductSearchToMerchantProductFacadeInterface
     {
         return $this->getProvidedDependency(MerchantProductSearchDependencyProvider::FACADE_MERCHANT_PRODUCT);

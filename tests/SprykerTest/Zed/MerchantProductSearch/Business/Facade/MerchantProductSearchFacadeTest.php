@@ -39,9 +39,6 @@ class MerchantProductSearchFacadeTest extends Unit
      */
     protected $tester;
 
-    /**
-     * @return void
-     */
     public function testGetMerchantDataByProductAbstractIdsReturnsProductAbstractMerchantTransfers(): void
     {
         // Arrange
@@ -89,9 +86,6 @@ class MerchantProductSearchFacadeTest extends Unit
         $this->assertEquals($expectedResult, $productAbstractMerchantTransfers);
     }
 
-    /**
-     * @return void
-     */
     public function testGetMerchantDataByProductAbstractIdsForNotExistingAbstractProductReturnsEmptyArray(): void
     {
         // Arrange
@@ -107,9 +101,6 @@ class MerchantProductSearchFacadeTest extends Unit
         $this->assertEquals($expectedProductAbstractMerchantTransfers, $productAbstractMerchantTransfers);
     }
 
-    /**
-     * @return void
-     */
     public function testExpandProductConcretePageMapSuccess(): void
     {
         // Arrange
@@ -139,9 +130,6 @@ class MerchantProductSearchFacadeTest extends Unit
         $this->assertContains($merchantTransfer->getMerchantReference(), $pageMapTransfer->getMerchantReferences());
     }
 
-    /**
-     * @return void
-     */
     public function testExpandProductConcretePageMapFailed(): void
     {
         // Arrange

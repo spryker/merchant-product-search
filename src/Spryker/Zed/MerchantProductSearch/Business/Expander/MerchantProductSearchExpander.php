@@ -21,9 +21,6 @@ class MerchantProductSearchExpander implements MerchantProductSearchExpanderInte
      */
     protected $merchantProductFacade;
 
-    /**
-     * @param \Spryker\Zed\MerchantProductSearch\Dependency\Facade\MerchantProductSearchToMerchantProductFacadeInterface $merchantProductFacade
-     */
     public function __construct(MerchantProductSearchToMerchantProductFacadeInterface $merchantProductFacade)
     {
         $this->merchantProductFacade = $merchantProductFacade;

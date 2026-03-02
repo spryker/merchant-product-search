@@ -28,11 +28,6 @@ class MerchantProductSearchWriter implements MerchantProductSearchWriterInterfac
      */
     protected $merchantProductSearchRepository;
 
-    /**
-     * @param \Spryker\Zed\MerchantProductSearch\Dependency\Facade\MerchantProductSearchToEventBehaviorFacadeInterface $eventBehaviorFacade
-     * @param \Spryker\Zed\MerchantProductSearch\Dependency\Facade\MerchantProductSearchToProductPageSearchFacadeInterface $productPageSearchFacade
-     * @param \Spryker\Zed\MerchantProductSearch\Persistence\MerchantProductSearchRepositoryInterface $merchantProductSearchRepository
-     */
     public function __construct(
         MerchantProductSearchToEventBehaviorFacadeInterface $eventBehaviorFacade,
         MerchantProductSearchToProductPageSearchFacadeInterface $productPageSearchFacade,

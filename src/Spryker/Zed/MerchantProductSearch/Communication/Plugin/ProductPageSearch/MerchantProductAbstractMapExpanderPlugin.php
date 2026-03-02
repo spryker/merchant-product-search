@@ -72,12 +72,6 @@ class MerchantProductAbstractMapExpanderPlugin extends AbstractPlugin implements
         return $pageMapTransfer;
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\PageMapTransfer $pageMapTransfer
-     * @param string $value
-     *
-     * @return bool
-     */
     protected function hasMerchantNameFacet(PageMapTransfer $pageMapTransfer, string $value): bool
     {
         foreach ($pageMapTransfer->getStringFacet() as $facetMapTransfer) {

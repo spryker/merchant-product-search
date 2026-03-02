@@ -84,12 +84,6 @@ class MerchantProductSearchPublisherTriggerPlugin extends AbstractPlugin impleme
         return static::COL_ID_MERCHANT_PRODUCT_ABSTRACT;
     }
 
-    /**
-     * @param int $offset
-     * @param int $limit
-     *
-     * @return \Generated\Shared\Transfer\MerchantProductAbstractCriteriaTransfer
-     */
     protected function createMerchantProductAbstractCriteriaTransfer(int $offset, int $limit): MerchantProductAbstractCriteriaTransfer
     {
         $paginationTransfer = (new PaginationTransfer())->setOffset($offset)->setLimit($limit);

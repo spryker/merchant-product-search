@@ -27,21 +27,11 @@ class MerchantProductSearchToMerchantProductFacadeBridge implements MerchantProd
         $this->merchantProductFacade = $merchantProductFacade;
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\MerchantProductCriteriaTransfer $merchantProductCriteriaTransfer
-     *
-     * @return \Generated\Shared\Transfer\MerchantTransfer|null
-     */
     public function findMerchant(MerchantProductCriteriaTransfer $merchantProductCriteriaTransfer): ?MerchantTransfer
     {
         return $this->merchantProductFacade->findMerchant($merchantProductCriteriaTransfer);
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\MerchantProductAbstractCriteriaTransfer $merchantProductAbstractCriteriaTransfer
-     *
-     * @return \Generated\Shared\Transfer\MerchantProductAbstractCollectionTransfer
-     */
     public function getMerchantProductAbstractCollection(
         MerchantProductAbstractCriteriaTransfer $merchantProductAbstractCriteriaTransfer
     ): MerchantProductAbstractCollectionTransfer {

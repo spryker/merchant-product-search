@@ -39,9 +39,6 @@ class MerchantProductMerchantNameSearchConfigExpanderPlugin extends AbstractPlug
         return (new SearchConfigExtensionTransfer())->addFacetConfig($this->createMerchantNameFacetConfig());
     }
 
-    /**
-     * @return \Generated\Shared\Transfer\FacetConfigTransfer
-     */
     protected function createMerchantNameFacetConfig(): FacetConfigTransfer
     {
         return (new FacetConfigTransfer())

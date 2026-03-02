@@ -36,9 +36,6 @@ class MerchantProductSearchWritePublisherPluginTest extends Unit
      */
     protected $tester;
 
-    /**
-     * @return void
-     */
     public function setUp(): void
     {
         parent::setUp();
@@ -46,9 +43,6 @@ class MerchantProductSearchWritePublisherPluginTest extends Unit
         $this->tester->addDependencies();
     }
 
-    /**
-     * @return void
-     */
     public function testMerchantProductSearchWritePublisherPluginStoresData(): void
     {
         // Arrange

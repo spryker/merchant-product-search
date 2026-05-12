@@ -37,4 +37,14 @@ class MerchantProductSearchToMerchantProductFacadeBridge implements MerchantProd
     ): MerchantProductAbstractCollectionTransfer {
         return $this->merchantProductFacade->getMerchantProductAbstractCollection($merchantProductAbstractCriteriaTransfer);
     }
+
+    /**
+     * @param array<string> $concreteProductSkus
+     *
+     * @return array<string, string>
+     */
+    public function getConcreteProductSkuMerchantReferenceMap(array $concreteProductSkus): array
+    {
+        return $this->merchantProductFacade->getConcreteProductSkuMerchantReferenceMap($concreteProductSkus);
+    }
 }

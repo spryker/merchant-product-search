@@ -27,4 +27,11 @@ interface MerchantProductSearchExpanderInterface
         array $productData,
         LocaleTransfer $localeTransfer
     ): PageMapTransfer;
+
+    /**
+     * @param array<\Generated\Shared\Transfer\ProductConcreteTransfer> $productConcreteTransfers
+     *
+     * @return void
+     */
+    public function preloadMerchantByProductConcreteTransfers(array $productConcreteTransfers): void;
 }

@@ -12,6 +12,7 @@ use Generated\Shared\Transfer\PageMapTransfer;
 use Spryker\Zed\Kernel\Communication\AbstractPlugin;
 use Spryker\Zed\ProductPageSearchExtension\Dependency\PageMapBuilderInterface;
 use Spryker\Zed\ProductPageSearchExtension\Dependency\Plugin\ProductConcretePageMapExpanderPluginInterface;
+use Spryker\Zed\ProductPageSearchExtension\Dependency\Plugin\ProductConcretePageMapExpanderPreLoaderPluginInterface;
 
 /**
  * @method \Spryker\Zed\MerchantProductSearch\Persistence\MerchantProductSearchRepositoryInterface getRepository()
@@ -19,8 +20,22 @@ use Spryker\Zed\ProductPageSearchExtension\Dependency\Plugin\ProductConcretePage
  * @method \Spryker\Zed\MerchantProductSearch\MerchantProductSearchConfig getConfig()
  * @method \Spryker\Zed\MerchantProductSearch\Communication\MerchantProductSearchCommunicationFactory getFactory()
  */
-class MerchantProductProductConcretePageMapExpanderPlugin extends AbstractPlugin implements ProductConcretePageMapExpanderPluginInterface
+class MerchantProductProductConcretePageMapExpanderPlugin extends AbstractPlugin implements ProductConcretePageMapExpanderPluginInterface, ProductConcretePageMapExpanderPreLoaderPluginInterface
 {
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     *
+     * @param array<\Generated\Shared\Transfer\ProductConcreteTransfer> $productConcreteTransfers
+     *
+     * @return void
+     */
+    public function preload(array $productConcreteTransfers): void
+    {
+        $this->getFacade()->preloadMerchantByProductConcreteTransfers($productConcreteTransfers);
+    }
+
     /**
      * {@inheritDoc}
      * - Expands `PageMap` transfer object with `merchant_reference`.

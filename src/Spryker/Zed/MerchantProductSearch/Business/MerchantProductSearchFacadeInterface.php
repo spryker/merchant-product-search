@@ -75,4 +75,18 @@ interface MerchantProductSearchFacadeInterface
         array $productData,
         LocaleTransfer $localeTransfer
     ): PageMapTransfer;
+
+    /**
+     * Specification:
+     * - Bulk-preloads merchant data for all given product concrete transfers into an in-memory cache.
+     * - Uses a single query keyed by concrete product SKUs.
+     * - Subsequent calls to expandProductConcretePageMap() for the same product IDs become instant cache hits.
+     *
+     * @api
+     *
+     * @param array<\Generated\Shared\Transfer\ProductConcreteTransfer> $productConcreteTransfers
+     *
+     * @return void
+     */
+    public function preloadMerchantByProductConcreteTransfers(array $productConcreteTransfers): void;
 }

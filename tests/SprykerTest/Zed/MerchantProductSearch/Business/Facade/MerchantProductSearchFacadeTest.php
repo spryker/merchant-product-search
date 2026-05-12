@@ -18,6 +18,8 @@ use Generated\Shared\Transfer\ProductConcretePageSearchTransfer;
 use Generated\Shared\Transfer\ProductConcreteTransfer;
 use Generated\Shared\Transfer\StoreRelationTransfer;
 use Generated\Shared\Transfer\StoreTransfer;
+use ReflectionClass;
+use Spryker\Zed\MerchantProductSearch\Business\Expander\MerchantProductSearchExpander;
 use Spryker\Zed\ProductPageSearch\Business\DataMapper\PageMapBuilder;
 
 /**
@@ -38,6 +40,13 @@ class MerchantProductSearchFacadeTest extends Unit
      * @var \SprykerTest\Zed\MerchantProductSearch\MerchantProductSearchBusinessTester
      */
     protected $tester;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->clearExpanderCache();
+    }
 
     public function testGetMerchantDataByProductAbstractIdsReturnsProductAbstractMerchantTransfers(): void
     {
@@ -152,5 +161,139 @@ class MerchantProductSearchFacadeTest extends Unit
         // Assert
         $this->assertCount(0, $pageMapTransfer->getMerchantReferences());
         $this->assertCount(0, $pageMapTransfer->getFullTextBoosted());
+    }
+
+    /**
+     * @dataProvider preloadMerchantByProductConcreteTransfersDataProvider
+     */
+    public function testPreloadMerchantByProductConcreteTransfersPopulatesCache(
+        int $merchantLinkedProductCount,
+        int $nonMerchantProductCount,
+        int $expectedCacheSize,
+    ): void {
+        // Arrange
+        $merchantTransfer = $this->tester->haveMerchant([MerchantTransfer::IS_ACTIVE => true]);
+
+        $merchantLinkedProducts = [];
+
+        for ($i = 0; $i < $merchantLinkedProductCount; $i++) {
+            $product = $this->tester->haveProduct([ProductConcreteTransfer::IS_ACTIVE => true]);
+            $this->tester->haveMerchantProduct([
+                MerchantProductTransfer::ID_MERCHANT => $merchantTransfer->getIdMerchant(),
+                MerchantProductTransfer::ID_PRODUCT_ABSTRACT => $product->getFkProductAbstract(),
+            ]);
+            $merchantLinkedProducts[] = $product;
+        }
+
+        $nonMerchantProducts = [];
+
+        for ($i = 0; $i < $nonMerchantProductCount; $i++) {
+            $nonMerchantProducts[] = $this->tester->haveProduct([ProductConcreteTransfer::IS_ACTIVE => true]);
+        }
+
+        // Act
+        $this->tester->getFacade()->preloadMerchantByProductConcreteTransfers(
+            array_merge($merchantLinkedProducts, $nonMerchantProducts),
+        );
+
+        // Assert
+        $cache = $this->getExpanderCache();
+
+        $this->assertCount($expectedCacheSize, $cache);
+
+        foreach ($merchantLinkedProducts as $product) {
+            $idProductConcrete = $product->getIdProductConcreteOrFail();
+            $this->assertArrayHasKey($idProductConcrete, $cache);
+            $this->assertNotNull($cache[$idProductConcrete]);
+            $this->assertSame($merchantTransfer->getMerchantReference(), $cache[$idProductConcrete]->getMerchantReference());
+        }
+
+        foreach ($nonMerchantProducts as $product) {
+            $idProductConcrete = $product->getIdProductConcreteOrFail();
+            $this->assertArrayHasKey($idProductConcrete, $cache, sprintf('Expected null cache entry for non-merchant product %d.', $idProductConcrete));
+            $this->assertNull($cache[$idProductConcrete]);
+        }
+    }
+
+    /**
+     * @return array<string, array<mixed>>
+     */
+    public static function preloadMerchantByProductConcreteTransfersDataProvider(): array
+    {
+        return [
+            'empty input leaves cache empty' => [
+                'merchantLinkedProductCount' => 0,
+                'nonMerchantProductCount' => 0,
+                'expectedCacheSize' => 0,
+            ],
+            'single merchant-linked product is cached with merchant transfer' => [
+                'merchantLinkedProductCount' => 1,
+                'nonMerchantProductCount' => 0,
+                'expectedCacheSize' => 1,
+            ],
+            'multiple merchant-linked products are all cached' => [
+                'merchantLinkedProductCount' => 3,
+                'nonMerchantProductCount' => 0,
+                'expectedCacheSize' => 3,
+            ],
+            'non-merchant product is cached as null' => [
+                'merchantLinkedProductCount' => 0,
+                'nonMerchantProductCount' => 1,
+                'expectedCacheSize' => 1,
+            ],
+            'mixed products: merchant-linked cached with transfer, others with null' => [
+                'merchantLinkedProductCount' => 2,
+                'nonMerchantProductCount' => 2,
+                'expectedCacheSize' => 4,
+            ],
+        ];
+    }
+
+    /**
+     * Verifies that a second preload call with already-cached product concretes
+     * leaves their cache entries unchanged (no re-query to the database).
+     */
+    public function testPreloadMerchantByProductConcreteTransfersSkipsAlreadyCachedProducts(): void
+    {
+        // Arrange
+        $merchantTransfer = $this->tester->haveMerchant([MerchantTransfer::IS_ACTIVE => true]);
+        $firstProduct = $this->tester->haveProduct([ProductConcreteTransfer::IS_ACTIVE => true]);
+        $secondProduct = $this->tester->haveProduct([ProductConcreteTransfer::IS_ACTIVE => true]);
+
+        $this->tester->haveMerchantProduct([
+            MerchantProductTransfer::ID_MERCHANT => $merchantTransfer->getIdMerchant(),
+            MerchantProductTransfer::ID_PRODUCT_ABSTRACT => $firstProduct->getFkProductAbstract(),
+        ]);
+        $this->tester->haveMerchantProduct([
+            MerchantProductTransfer::ID_MERCHANT => $merchantTransfer->getIdMerchant(),
+            MerchantProductTransfer::ID_PRODUCT_ABSTRACT => $secondProduct->getFkProductAbstract(),
+        ]);
+
+        $this->tester->getFacade()->preloadMerchantByProductConcreteTransfers([$firstProduct, $secondProduct]);
+
+        $cacheAfterFirstPreload = $this->getExpanderCache();
+
+        // Act: preload again with only the first product (already in cache)
+        $this->tester->getFacade()->preloadMerchantByProductConcreteTransfers([$firstProduct]);
+
+        // Assert: cache is identical — the already-cached entry was not re-fetched or overwritten
+        $this->assertEquals($cacheAfterFirstPreload, $this->getExpanderCache());
+        $this->assertCount(2, $this->getExpanderCache());
+    }
+
+    /**
+     * @return array<int, \Generated\Shared\Transfer\MerchantTransfer|null>
+     */
+    protected function getExpanderCache(): array
+    {
+        $reflection = new ReflectionClass(MerchantProductSearchExpander::class);
+
+        return $reflection->getProperty('merchantTransferByProductConcreteIdCache')->getValue();
+    }
+
+    protected function clearExpanderCache(): void
+    {
+        $reflection = new ReflectionClass(MerchantProductSearchExpander::class);
+        $reflection->getProperty('merchantTransferByProductConcreteIdCache')->setValue(null, []);
     }
 }

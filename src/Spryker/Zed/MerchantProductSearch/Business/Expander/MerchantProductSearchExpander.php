@@ -9,13 +9,20 @@ namespace Spryker\Zed\MerchantProductSearch\Business\Expander;
 
 use Generated\Shared\Transfer\LocaleTransfer;
 use Generated\Shared\Transfer\MerchantProductCriteriaTransfer;
+use Generated\Shared\Transfer\MerchantTransfer;
 use Generated\Shared\Transfer\PageMapTransfer;
 use Generated\Shared\Transfer\ProductConcretePageSearchTransfer;
+use Generated\Shared\Transfer\ProductConcreteTransfer;
 use Spryker\Zed\MerchantProductSearch\Dependency\Facade\MerchantProductSearchToMerchantProductFacadeInterface;
 use Spryker\Zed\ProductPageSearchExtension\Dependency\PageMapBuilderInterface;
 
 class MerchantProductSearchExpander implements MerchantProductSearchExpanderInterface
 {
+    /**
+     * @var array<int, \Generated\Shared\Transfer\MerchantTransfer|null>
+     */
+    protected static array $merchantTransferByProductConcreteIdCache = [];
+
     /**
      * @var \Spryker\Zed\MerchantProductSearch\Dependency\Facade\MerchantProductSearchToMerchantProductFacadeInterface
      */
@@ -40,13 +47,13 @@ class MerchantProductSearchExpander implements MerchantProductSearchExpanderInte
         array $productData,
         LocaleTransfer $localeTransfer
     ): PageMapTransfer {
-        if (!$productData[ProductConcretePageSearchTransfer::FK_PRODUCT]) {
+        $idProductConcrete = $productData[ProductConcretePageSearchTransfer::FK_PRODUCT];
+
+        if (!$idProductConcrete) {
             return $pageMapTransfer;
         }
 
-        $merchantProductCriteriaTransfer = (new MerchantProductCriteriaTransfer())
-            ->addIdProductConcrete($productData[ProductConcretePageSearchTransfer::FK_PRODUCT]);
-        $merchantTransfer = $this->merchantProductFacade->findMerchant($merchantProductCriteriaTransfer);
+        $merchantTransfer = $this->findMerchantTransferByProductConcreteId($idProductConcrete);
 
         if (!$merchantTransfer) {
             return $pageMapTransfer;
@@ -55,5 +62,54 @@ class MerchantProductSearchExpander implements MerchantProductSearchExpanderInte
         $pageMapTransfer->addMerchantReference($merchantTransfer->getMerchantReference());
 
         return $pageMapTransfer;
+    }
+
+    /**
+     * @param array<\Generated\Shared\Transfer\ProductConcreteTransfer> $productConcreteTransfers
+     *
+     * @return void
+     */
+    public function preloadMerchantByProductConcreteTransfers(array $productConcreteTransfers): void
+    {
+        $uncachedTransfers = array_filter(
+            $productConcreteTransfers,
+            static fn (ProductConcreteTransfer $transfer): bool => !array_key_exists(
+                $transfer->getIdProductConcreteOrFail(),
+                static::$merchantTransferByProductConcreteIdCache,
+            ),
+        );
+
+        if (!$uncachedTransfers) {
+            return;
+        }
+
+        $skuToIdProductConcreteMap = [];
+        foreach ($uncachedTransfers as $transfer) {
+            $skuToIdProductConcreteMap[$transfer->getSkuOrFail()] = $transfer->getIdProductConcreteOrFail();
+        }
+
+        $skuToMerchantReferenceMap = $this->merchantProductFacade->getConcreteProductSkuMerchantReferenceMap(
+            array_keys($skuToIdProductConcreteMap),
+        );
+
+        foreach ($skuToIdProductConcreteMap as $sku => $idProductConcrete) {
+            $merchantReference = $skuToMerchantReferenceMap[$sku] ?? null;
+
+            static::$merchantTransferByProductConcreteIdCache[$idProductConcrete] = $merchantReference !== null
+                ? (new MerchantTransfer())->setMerchantReference($merchantReference)
+                : null;
+        }
+    }
+
+    protected function findMerchantTransferByProductConcreteId(int $idProductConcrete): ?MerchantTransfer
+    {
+        if (!array_key_exists($idProductConcrete, static::$merchantTransferByProductConcreteIdCache)) {
+            $merchantProductCriteriaTransfer = (new MerchantProductCriteriaTransfer())
+                ->addIdProductConcrete($idProductConcrete);
+
+            static::$merchantTransferByProductConcreteIdCache[$idProductConcrete] = $this->merchantProductFacade->findMerchant($merchantProductCriteriaTransfer);
+        }
+
+        return static::$merchantTransferByProductConcreteIdCache[$idProductConcrete];
     }
 }

@@ -94,4 +94,20 @@ class MerchantProductSearchFacade extends AbstractFacade implements MerchantProd
                 $localeTransfer,
             );
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @api
+     *
+     * @param array<\Generated\Shared\Transfer\ProductConcreteTransfer> $productConcreteTransfers
+     *
+     * @return void
+     */
+    public function preloadMerchantByProductConcreteTransfers(array $productConcreteTransfers): void
+    {
+        $this->getFactory()
+            ->createMerchantProductSearchExpander()
+            ->preloadMerchantByProductConcreteTransfers($productConcreteTransfers);
+    }
 }

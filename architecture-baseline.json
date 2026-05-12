@@ -42,6 +42,13 @@
         "priority": "2"
     },
     {
+        "fileName": "src/Spryker/Zed/MerchantProductSearch/Dependency/Facade/MerchantProductSearchToMerchantProductFacadeBridge.php",
+        "description": "Bridges: Method `getConcreteProductSkuMerchantReferenceMap()` must have `public function get<DomainEntity>Collection(<DomainEntity>CriteriaTransfer): <DomainEntity>CollectionTransfer` signature.",
+        "rule": "BridgeFacadeMethodsRule",
+        "ruleset": "Spryker",
+        "priority": "2"
+    },
+    {
         "fileName": "src/Spryker/Zed/MerchantProductSearch/Dependency/Facade/MerchantProductSearchToProductPageSearchFacadeBridge.php",
         "description": "Bridges: Type should be defined for param `pageDataExpanderPluginNames` in method `Spryker\\Zed\\MerchantProductSearch\\Dependency\\Facade\\MerchantProductSearchToProductPageSearchFacadeBridge::refresh()`.",
         "rule": "BridgeMethodsRule",

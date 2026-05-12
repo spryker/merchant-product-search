@@ -19,4 +19,11 @@ interface MerchantProductSearchToMerchantProductFacadeInterface
     public function getMerchantProductAbstractCollection(
         MerchantProductAbstractCriteriaTransfer $merchantProductAbstractCriteriaTransfer
     ): MerchantProductAbstractCollectionTransfer;
+
+    /**
+     * @param array<string> $concreteProductSkus
+     *
+     * @return array<string, string>
+     */
+    public function getConcreteProductSkuMerchantReferenceMap(array $concreteProductSkus): array;
 }
